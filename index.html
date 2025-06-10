@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,user-scalable=no">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Love+Light&display=swap" rel="stylesheet">
   <title>3D Carousel</title>
   <style>
     * {
@@ -53,14 +56,24 @@
       -webkit-box-reflect: below 10px linear-gradient(transparent, transparent, #0007);
     }
 
-    #drag-container p {
-      font-family: Serif;
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translate(-50%, -50%) rotateX(90deg);
-      color: #fff;
-    }
+ #drag-container p {
+  font-family: "Love Light", cursive;
+  font-weight: 400;
+  font-style: normal;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotateX(90deg);
+  color: #e21c13; /* vermelho paixão */
+  text-align: center;
+  text-shadow: 1px 1px 6px rgba(196, 30, 58, 0.7);
+  z-index: 0;
+  font-size: 2.4em;
+  width: 230%;      /* deixa o p ocupar 90% da largura do container */
+  max-width: none;  /* remove limite máximo, se houver */
+  line-height: 1.4;
+  white-space: normal;
+}
 
     #ground {
       width: 900px;
@@ -160,11 +173,73 @@
         transform: scale(1);
       }
     }
+/* Player container */
+  #custom-player {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    padding: 10px 20px;
+    background: #fff0f5;
+    border: 2px solid #ff8da7;
+    border-radius: 30px;
+    box-shadow: 0 0 20px rgba(255, 192, 203, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 9999;
+  }
+
+  /* Coração como botão de play/pause */
+  #play-pause {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #ff4d6d;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+
+  #play-pause:hover {
+    transform: scale(1.2);
+  }
+
+  /* Barra de progresso */
+  #progress {
+    -webkit-appearance: none;
+    width: 400px;
+    height: 6px;
+    border-radius: 4px;
+    background: #ffe3e9;
+    outline: none;
+    margin-left: 10px;
+  }
+
+  #progress::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 14px;
+    width: 14px;
+    background: #ff4d6d;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 4px rgba(0,0,0,0.2);
+  }
+
+  #progress::-moz-range-thumb {
+    height: 14px;
+    width: 14px;
+    background: #ff4d6d;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
   </style>
 
 </head>
 
 <body>
+
     <canvas id="canvas" width="1400" height="600"></canvas>
   <div class="box">
     <canvas id="pinkboard"></canvas>
@@ -180,20 +255,56 @@
       <img src="foto6.jpeg" alt="" width="133" height="200">
       <img src="foto7.jpeg" alt="" width="133" height="200">
       <img src="foto8.jpeg" alt="" width="133" height="200">
-
+  
       <p> Obrigado por fazer minha vida colorida não só com uma cor mas com o arco iris inteiro. 
 Eu te amo e entrego a ti todo meu coração, te amarei e cuidarei de você com todo carinho do mundo.</p>
-
+  
+<!-- Player customizado -->
     </div>
     <div id="ground"></div>
   </div>
+<div id="custom-player">
+  <button id="play-pause" aria-label="Tocar música">❤️</button>
+  <input type="range" id="progress" value="0" min="0" step="1">
+</div>
 
-  <div id="music-container"></div>
-
-  <script>
-    
-  </script>
+<!-- Áudio escondido -->
+<audio id="bg-music" src="time.mp3" loop></audio>
 </body>
+
+<script>
+  const audio = document.getElementById('bg-music');
+  const playBtn = document.getElementById('play-pause');
+  const progress = document.getElementById('progress');
+
+  // Tocar automaticamente se possível
+  document.addEventListener('DOMContentLoaded', () => {
+    audio.play().catch(() => {}); // silenciosamente tenta tocar
+  });
+
+  // Toggle play/pause
+  playBtn.addEventListener('click', () => {
+    if (audio.paused) {
+      audio.play();
+      playBtn.textContent = '💓';
+    } else {
+      audio.pause();
+      playBtn.textContent = '❤️';
+    }
+  });
+
+  // Atualiza a barrinha
+  audio.addEventListener('timeupdate', () => {
+    progress.max = audio.duration;
+    progress.value = audio.currentTime;
+  });
+
+  // Permite arrastar a barra
+  progress.addEventListener('input', () => {
+    audio.currentTime = progress.value;
+  });
+</script>
+
  <script>
     var radius = 240;
     var autoRotate = true;
